@@ -80,24 +80,26 @@ class CPU
   @physical_cpu_count = nil
   # Return the number of physical/logical CPUs in the system.
   def self.cpu_count(logical=true)
-    count = 0
+    count = 0 
     if !logical
       unless @physical_cpu_count
+        cores = false
         IO.readlines('/proc/cpuinfo').each do |line|
-          count += 1 if line.start_with?('physical id')
-        end
+          cores = line if line.match('cpu cores') and not cores
+        end 
+        core_fix = cores.gsub(/[\D]/, '') 
+        count = core_fix.to_i if core_fix.match(/^[\d]+$/) # except cpuidle and cpufreq
         @physical_cpu_count = count
-      end
+      end 
       return @physical_cpu_count
-    end
+    end 
 
     unless @logical_cpu_count
-      Dir.entries('/sys/devices/system/cpu').each do |entry|
-        count += 1 if entry.start_with?('cpu')
-      end
-      count -= 2 # except cpuidle and cpufreq
+      IO.readlines('/proc/cpuinfo').each do |line|
+        count += 1 if line.start_with?('physical id')
+      end 
       @logical_cpu_count = count
-    end
+    end 
     @logical_cpu_count
   end
 
