@@ -9,6 +9,9 @@ I'll also look into suggestions for optimization and stuff.
 
 As this is a fork of a dead repo, I'm moving the installation instructions up to the top, because there are relevant changes to the process.
 
+# Known To-Do List
+1) Add ``cpu_freq`` functionality to the gem
+
 
 ## Install
 
