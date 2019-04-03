@@ -1,6 +1,29 @@
+# My Fork -- gsfordham
+I mainly forked this repo, because the original repo was abandoned, and I need to use it with a new project, so if I notice any problems, I'll try to make adjustments.
+
+If _anyone else_ notices any missing features or bugs, please start an issue. I'll try to fix them up.
+
+If you're not sure if an issue has already been noticed or resolved, please check the Pull Requests page and the Issues page.
+
+I'll also look into suggestions for optimization and stuff.
+
+As this is a fork of a dead repo, I'm moving the installation instructions up to the top, because there are relevant changes to the process.
+
+
+## Install
+
+```
+[sudo] gem install posixpsutil #This probably won't work, since it's likely to redirect to the abandoned project
+# or
+# git clone https://github.com/spacewander/posixpsutil
+git clone https://github.com/gsfordham/posixpsutil
+gem build posixpsutil.gemspec && [sudo] gem install --local posixpsutil
+```
+
+---------
 # posixpsutil
 
-Now posixpsuti is **only** available on Linux.
+Now posixpsutil is **only** available on Linux.
 Because I don't have chance to access other posix platforms, I can't test the C extensions on them. I am sorry that I can't finish this project currently.
 
 To make posixpsutil available on your platform, you can:
@@ -305,13 +328,4 @@ pry(main)> p = PosixPsutil::Process.new 9619
 pry(main)> p.wait(3)
 Timeout::Error: when waiting for (pid=9619)
 from /var/lib/gems/2.1.0/gems/posixpsutil-0.1.0/lib/posixpsutil/common.rb:128:in `check_timeout'
-```
-
-## Install
-
-```
-[sudo] gem install posixpsutil
-# or
-git clone https://github.com/spacewander/posixpsutil
-gem build posixpsutil.gemspec && [sudo] gem install --local posixpsutil
 ```
