@@ -88,7 +88,7 @@ class CPU
           cores = line if line.match('cpu cores') and not cores
         end 
         core_fix = cores.gsub(/[\D]/, '') 
-        count = core_fix.to_i if core_fix.match(/^[\d]+$/) # except cpuidle and cpufreq
+        count = core_fix.to_i if core_fix.match(/^[\d]+$/)
         @physical_cpu_count = count
       end 
       return @physical_cpu_count
