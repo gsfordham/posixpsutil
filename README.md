@@ -13,7 +13,7 @@ As this is a fork of a dead repo, I'm moving the installation instructions up to
 ## Install
 
 ```
-[sudo] gem install posixpsutil #This probably won't work, since it's likely to redirect to the abandoned project
+[sudo] gem install posixpsutil #<-- This probably won't work, since it's likely to redirect to the abandoned project
 # or
 # git clone https://github.com/spacewander/posixpsutil
 git clone https://github.com/gsfordham/posixpsutil
