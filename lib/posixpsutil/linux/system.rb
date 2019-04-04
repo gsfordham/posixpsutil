@@ -80,26 +80,49 @@ class CPU
   @physical_cpu_count = nil
   # Return the number of physical/logical CPUs in the system.
   def self.cpu_count(logical=true)
-    count = 0 
+    count = 0 #The count to be returned
+    cpu_list = {} #A hash of filled physical CPU sockets and their physical core count
+    proc_cpu = File.open('/proc/cpuinfo', 'r').readlines.join #The text of the CPU proc file
+    
+    #Split on empty lines and store as array of cores
+    core_list = proc_cpu.split(/^[\w]*$/)
+    
+    #Remove empty core indexes
+    core_list.delete_if {|core| core.chomp == ''}
+    
+    # For each core, create a socket index.
+    # If the socket index exists in the CPU list,
+    # do not make any changes. Otherwise, create the
+    # index and add the core count, as determined by the
+    # line with 'cpu cores'.
+    # 
+    # By using these keys, multi-CPU systems can be checked,
+    # as it detects each 'physical id' or socket address.
+    core_list.each do |core|
+        address = "socket_" + core[/^physical id.+$/].gsub(/[\D]/, '')
+        if !cpu_list.has_key?(address)
+            cpu_list[address] = core[/^cpu cores.+$/].gsub(/[\D]/, '')
+        end
+    end
+    
+    #If the request wants only the physical core counts
     if !logical
       unless @physical_cpu_count
-        cores = false
-        IO.readlines('/proc/cpuinfo').each do |line|
-          cores = line if line.match('cpu cores') and not cores
-        end 
-        core_fix = cores.gsub(/[\D]/, '') 
-        count = core_fix.to_i if core_fix.match(/^[\d]+$/)
+        cpu_list.each do |socket,cores|
+            #Add the physical core count for each CPU socket
+            count += cores.to_i
+        end
         @physical_cpu_count = count
-      end 
+      end
       return @physical_cpu_count
-    end 
-
+    end
+    
+    #If the request wants a count of all logical cores
     unless @logical_cpu_count
-      IO.readlines('/proc/cpuinfo').each do |line|
-        count += 1 if line.start_with?('physical id')
-      end 
+      #The length of the core list counts all logical and physical cores
+      count = core_list.length
       @logical_cpu_count = count
-    end 
+    end
     @logical_cpu_count
   end
 
