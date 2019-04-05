@@ -536,6 +536,15 @@ class System
     end
     users
   end
+  
+  #Display information about the OS
+  def self.system_info
+    {:os_short => `uname -s`.chomp,
+    :os_full => `uname -o`.chomp,
+    :kernel => `uname -r`.chomp,
+    :arch => `uname -m`.chomp,
+    :hostname => `hostname`.chomp}
+  end
 
   # return system boot time expressed in seconds since epoch
   def self.boot_time
