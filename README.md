@@ -14,6 +14,7 @@ As this is a fork of a dead repo, I'm moving the installation instructions up to
 
 # Fixes and Improvements
 1) Fixed ``cpu_count``, so it now correctly counts logical and physical cores; also added multi-CPU functionality to it (should work, but I only have single-CPU systems; please open an issue, if there's any problems)
+2) Added a ``system_info`` method to the ``PosixPsutil::System`` class that returns an indexed hash of the OS short name, OS long name, kernel, machine architecture, and hostname
 
 ## Install
 
