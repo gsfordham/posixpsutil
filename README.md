@@ -9,15 +9,14 @@ I'll also look into suggestions for optimization and stuff.
 
 As this is a fork of a dead repo, I'm moving the installation instructions up to the top, because there are relevant changes to the process.
 
-# Known To-Do List
-1) Adjust ``cpu_freq`` functionality for best usage -- it's currently in a pull branch, but it's kinda hacky, right now.
-2) Probably try to add some kind of CPU temperature capability -- will have to look into how the ``sensors`` package works for this.
-3) Maybe work on adding GPU functionality -- not sure how this will turn out, given the number of GPUs out there and how you can often have more than 1, and I only have 1 AMD card in my desktop, so there's a lot I can't test, but I'll look into options -- _VERY tentative-- may just create an extra package or something_.
+# To-Do List
+1) Probably try to add some kind of CPU temperature capability -- will have to look into how the ``sensors`` package works for this.
+2) Maybe work on adding GPU functionality -- not sure how this will turn out, given the number of GPUs out there and how you can often have more than 1, and I only have 1 AMD card in my desktop, so there's a lot I can't test, but I'll look into options -- _VERY tentative-- may just create an extra package or something_.
 
 # Fixes and Improvements
 1) Fixed ``cpu_count``, so it now correctly counts logical and physical cores; also added multi-CPU functionality to it (should work, but I only have single-CPU systems; please open an issue, if there's any problems)
-2) Added a ``system_info`` method to the ``PosixPsutil::System`` class that returns an indexed hash of the OS short name, OS long name, kernel, machine architecture, and hostname
-3) Started a ``cpu_freq`` command, but it's still kinda hacky -- should fix some of it later. Based it off of Python's ``psutil`` command of the same name.
+2) Added a ``uname`` method to the ``PosixPsutil::System`` class that returns an indexed hash of the kernel name, kernel release, OS name, machine architecture, and hostname -- makes a call to ``uname -mnors`` and splits the output.
+3) Added a``cpu_freq`` method to PosixPsutil::CPU.
 
 ## Install
 
