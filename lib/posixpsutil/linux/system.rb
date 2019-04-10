@@ -620,12 +620,13 @@ class System
   end
   
   #Display information about the OS
-  def self.system_info
-    {:os_short => `uname -s`.chomp,
-    :os_full => `uname -o`.chomp,
-    :kernel => `uname -r`.chomp,
-    :arch => `uname -m`.chomp,
-    :hostname => `hostname`.chomp}
+  def self.uname
+    un = `uname -mnors`.chomp.split(' ')
+    {:kernel_name => un[0],
+    :kernel_release => un[2],
+    :os_name => un[4],
+    :arch => un[3],
+    :hostname => un[1]}
   end
 
   # return system boot time expressed in seconds since epoch
