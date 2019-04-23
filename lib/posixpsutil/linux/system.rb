@@ -324,11 +324,16 @@ class Memory
           meminfo.free = pair[1].to_i * 1024
         when 'MemTotal'
           meminfo.total = pair[1].to_i * 1024
+	when 'MemAvailable'
+          meminfo.available = pair[1].to_i * 1024
       end
     end
 
     meminfo.used = meminfo.total - meminfo.free
-    meminfo.available = meminfo.free + meminfo.cached + meminfo.buffers
+    if not meminfo.respond_to?("available")
+    then
+      meminfo.available = meminfo.free + meminfo.cached + meminfo.buffers
+    end
     meminfo.percent = COMMON::usage_percent((
       meminfo.total - meminfo.available) , meminfo.total, 1)
     meminfo
