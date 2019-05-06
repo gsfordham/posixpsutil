@@ -127,93 +127,86 @@ class CPU
   end
   
   #Return the average CPU frequencies or the
-	#frequencies of all system cores
+  #frequencies of all system cores
   def self.cpu_freq(cores=false)
     direc = '/sys/devices/system/cpu/cpufreq'
-		cpu_freqs = []
-		out  = false
-		
-		#If the normal system file exists
-		if File.directory?(direc)
-			`ls #{direc}`.split("\n").each {|line|
-				if line.match(/^policy/)
-					out = {}
-					files = `ls #{direc}/#{line.chomp}`.split("\n")
-					#puts files
-					files.each {|file|
-						if file.match('_cur_freq') or file.match('_max_freq') or file.match('_min_freq')
-							out["#{file}"] = (`cat #{direc}/#{line}/#{file}`.to_i / 1000).to_s.chomp + " MHz"
-						end
-					}
-					cpu_freqs << out
-				end
-			}
-			
-			#If the user has requested each core, return the
-			#hash as-is
-			if cores
-				out = cpu_freqs
-				
-			#Otherwise, calculate averages
-			else
-				avg_min = 0
-				avg_max = 0
-				avg_cur = 0
+    cpu_freqs = []
+    out  = false
 
-				cpu_freqs.each do |freqs|
-					if freqs['scaling_cur_freq']
-						avg_min += freqs['scaling_min_freq'].to_f
-						avg_max += freqs['scaling_max_freq'].to_f
-						avg_cur += freqs['scaling_cur_freq'].to_f
-					else
-						avg_min += freqs['cpuinfo_min_freq'].to_f
-						avg_max += freqs['cpuinfo_max_freq'].to_f
-						avg_cur += freqs['cpuinfo_cur_freq'].to_f
-					end
-				end
-				
-				out = {:cpu_min => (avg_min / cpu_freqs.length).to_f.round(2).to_s + " MHz",
-					:cpu_max => (avg_max / cpu_freqs.length).to_f.round(2).to_s + " MHz",
-					:cpu_cur => (avg_cur / cpu_freqs.length).to_f.round(2).to_s + " MHz"}
-			end
-		#If the normal file does not exist, fallback to CPU proc file
-		else
-			cpu_freqs = []
-			proc_cpu = File.open('/proc/cpuinfo', 'r').readlines.join
-			core_list = proc_cpu.split(/^[\w]*$/)
+    #If the normal system file exists
+    if File.directory?(direc)
+      `ls #{direc}`.split("\n").each {|line|
+        if line.match(/^policy/)
+          out = {}
+          files = `ls #{direc}/#{line.chomp}`.split("\n")
+          #puts files
+          files.each {|file|
+            if file.match('_cur_freq') or file.match('_max_freq') or file.match('_min_freq')
+              out["#{file}"] = (`cat #{direc}/#{line}/#{file}`.to_i / 1000).to_s.chomp + " MHz"
+            end
+          }
+          cpu_freqs << out
+        end
+      }
 
-			core_list.delete_if {|core| core.chomp == ''}
+      #If the user has requested each core, return the
+      #hash as-is
+      if cores
+        out = cpu_freqs
 
-			core_list.each do |core|
-				val = core[/^cpu MHz.+$/].gsub(/[^\d\.]/, '').to_f.round(2)
-				cpu_freqs << val
-			end
-			
-			#If the user wishes to see cores separately
-			if cores
-				out = cpu_freqs
-			#Otherwise, if they want general averages
-			else
-				avg_cur = 0
-				cpu_freqs.each do |freq|
-					avg_cur += freq.to_f.round(2)
-				end
-				
-				out = {:cpu_min => ("NIL"),
-					:cpu_max => ("NIL"),
-					:cpu_cur => (avg_cur / cpu_freqs.length).to_f.round(2).to_s + " MHz"}
-			end
-		end
-		
-		out
-  end
+      #Otherwise, calculate averages
+      else
+        avg_min = 0
+        avg_max = 0
+        avg_cur = 0
 
-  # The  amount  of  time,  measured in units of +USER_HZ+
-  # (1/100ths of a second on most architectures, 
-  # use sysconf(_SC_CLK_TCK) to obtain the right value), 
-  # that the system spent in various states
-  #
-  # * user   (1) Time spent in user mode.
+        cpu_freqs.each do |freqs|
+          if freqs['scaling_cur_freq']
+            avg_min += freqs['scaling_min_freq'].to_f
+            avg_max += freqs['scaling_max_freq'].to_f
+            avg_cur += freqs['scaling_cur_freq'].to_f
+          else
+            avg_min += freqs['cpuinfo_min_freq'].to_f
+            avg_max += freqs['cpuinfo_max_freq'].to_f
+            avg_cur += freqs['cpuinfo_cur_freq'].to_f
+          end
+        end
+
+        out = {:cpu_min => (avg_min / cpu_freqs.length).to_f.round(2),
+          :cpu_max => (avg_max / cpu_freqs.length).to_f.round(2),
+          :cpu_cur => (avg_cur / cpu_freqs.length).to_f.round(2)}
+      end
+    #If the normal file does not exist, fallback to CPU proc file
+    else
+      cpu_freqs = []
+      proc_cpu = File.open('/proc/cpuinfo', 'r').readlines.join
+      core_list = proc_cpu.split(/^[\w]*$/)
+
+      core_list.delete_if {|core| core.chomp == ''}
+
+      core_list.each do |core|
+        val = core[/^cpu MHz.+$/].gsub(/[^\d\.]/, '').to_f.round(2)
+        cpu_freqs << val
+      end
+
+      #If the user wishes to see cores separately
+      if cores
+        out = cpu_freqs
+      #Otherwise, if they want general averages
+      else
+        avg_cur = 0
+        cpu_freqs.each do |freq|
+          avg_cur += freq.to_f.round(2)
+        end
+
+        out = {:cpu_min => ("NIL"),
+          :cpu_max => ("NIL"),
+          :cpu_cur => (avg_cur / cpu_freqs.length).to_f.round(2)}
+      end
+    end
+
+    out
+  end  # * user   (1) Time spent in user mode.
   # * nice   (2) Time spent in user mode with low priority (nice).
   # * system (3) Time spent in system mode.
   # * idle   (4) Time spent in the idle task. This value should be USER_HZ times the second entry in the /proc/uptime pseudo-file.
